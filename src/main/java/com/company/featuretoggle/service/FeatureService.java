@@ -2,11 +2,8 @@ package com.company.featuretoggle.service;
 
 import org.ff4j.FF4j;
 import org.ff4j.core.Feature;
-import org.ff4j.exception.FeatureNotFoundException;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 @Service
 public class FeatureService implements IFeatureService {
@@ -18,32 +15,25 @@ public class FeatureService implements IFeatureService {
     }
 
     @Override
-    public List<Feature> getAllFeatures() {
-        return new ArrayList<>(_ff4j.getFeatureStore().readAll().values());
-    }
+    public boolean check(String granted, String feature) {
+        Feature toggle = _ff4j.getFeature(feature);
 
-    @Override
-    public Feature getFeature(String featureId) throws FeatureNotFoundException {
-        return _ff4j.getFeature(featureId);
-    }
+        if (toggle == null || !toggle.isEnable()) {
+            return false;
+        }
 
-    @Override
-    public void createFeature(String featureId) {
-        _ff4j.createFeature(featureId);
-    }
+        String[] grantes = toggle.getFlippingStrategy()
+                .getInitParams()
+                .get("grantedClients")
+                .trim()
+                .toLowerCase()
+                .replace(" ", "")
+                .split(",");
 
-    @Override
-    public void toggleFeature(String featureId, boolean enable) {
-        _ff4j.getFeature(featureId).setEnable(enable);
-    }
+        if (Arrays.asList(grantes).contains(granted.toLowerCase().trim())) {
+            return toggle.isEnable();
+        }
 
-    @Override
-    public void deleteFeature(String featureId) {
-        _ff4j.delete(featureId);
-    }
-
-    @Override
-    public boolean checkFeature(String featureId) {
-        return _ff4j.check(featureId);
+        return false;
     }
 }
