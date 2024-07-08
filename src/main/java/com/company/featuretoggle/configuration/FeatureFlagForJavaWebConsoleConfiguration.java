@@ -34,7 +34,8 @@ public class FeatureFlagForJavaWebConsoleConfiguration {
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         return http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/**").hasRole(_roles[0])
+                        .requestMatchers("/api/**").permitAll()
+                        .requestMatchers("/console/**").hasRole(_roles[0])
                         .anyRequest().authenticated())
                 .formLogin(form -> form
                         .defaultSuccessUrl("/console", true)
@@ -68,5 +69,5 @@ public class FeatureFlagForJavaWebConsoleConfiguration {
     @Bean
     ServletRegistrationBean<FF4jDispatcherServlet> servletRegistrationBean(FF4jDispatcherServlet servlet) {
         return new ServletRegistrationBean<FF4jDispatcherServlet>(servlet, "/console/*");
-    }    
+    }
 }
