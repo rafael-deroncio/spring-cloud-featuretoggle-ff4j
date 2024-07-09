@@ -2,6 +2,7 @@ version: '3.8'
 
 services:
   mysql:
+    container_name: mysql
     image: mysql:8.0
     ports:
       - "3306:3306"
@@ -14,6 +15,6 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - mysql-data:/var/lib/mysql
-
+      
 volumes:
-  mysql-data:
+  mysql-data: 
